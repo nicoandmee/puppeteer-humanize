@@ -7,6 +7,8 @@ export const ALPHA_CHARS: string[] = [
   ...`ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
 ]
 
+export const UPPER_CHARS: string[] = [...`ABCDEFGHIJKLMNOPQRSTUVWXYZ`]
+
 export const PROXIMATE_CHARS: Record<string, string[]> = {
   A: [...`QWESZ`],
   B: [...`VFGHN`],

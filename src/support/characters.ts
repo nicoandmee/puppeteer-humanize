@@ -11,7 +11,8 @@ export const charTypes: Record<CharacterType, string[]> = {
   numeric: CHARS.NUMERIC_CHARS,
   whitespace: CHARS.WHITESPACE_CHARS,
   punctuation: CHARS.PUNCTUATION_CHARS,
-  termination: CHARS.TERMINATION_CHARS
+  termination: CHARS.TERMINATION_CHARS,
+  upper: CHARS.UPPER_CHARS
 }
 
 /**
@@ -93,7 +94,8 @@ export const charTypeTests: Map<CharacterType, (input: string) => boolean> =
     ["termination", isTermination],
     ["whitespace", isWhitespace],
     ["alpha", isAlpha],
-    ["numeric", isNumeric]
+    ["numeric", isNumeric],
+    ["upper", isUpperCase]
   ])
 
 /**

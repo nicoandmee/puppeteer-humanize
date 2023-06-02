@@ -5,12 +5,14 @@ import {
   detectCharType,
   isCadence,
   keypressDelay,
-  rand,
   Timer,
   waitForTimeout
 } from "../support"
 import {
+  BoundingBox,
   CharacterType,
+  Cursor,
+  CursorClickOpts,
   ElementHandle,
   PerformanceTimer,
   TypeIntoOptions
@@ -27,6 +29,7 @@ import { typeMistake } from "./type-mistake"
  */
 export const typeInto = async (
   element: ElementHandle,
+  cursor: Cursor,
   text: string,
   config: TypeIntoOptions = {}
 ): Promise<PerformanceTimer> => {
@@ -39,12 +42,15 @@ export const typeInto = async (
   // Break input string into individual letters.
   const chars: string[] = [...text]
 
+  // Determine bounding box of element.
+  const boundingBox: BoundingBox = (await element.boundingBox()) as BoundingBox
+
   // Click element to allow text input.
-  // TODO: Add mouse lib to avoid clicking in the dead center of the element.
-  await element.hover()
-  await waitForTimeout({ min: 100, max: 200 })
-  await element.click({ delay: rand({ min: 5, max: 15 }) })
-  await waitForTimeout({ min: 200, max: 800 })
+  await cursor.actions.click({
+    target: boundingBox,
+    waitBeforeClick: [50, 100],
+    waitBetweenClick: [50, 100]
+  } as CursorClickOpts)
 
   // Type each character in sequence.
   let position: number = 0
@@ -61,8 +67,12 @@ export const typeInto = async (
     }
 
     // Type the correct character and add post type delay.
-    // TODO: Make capital letters use shift key.
-    await element.type(char, keypressDelay())
+    if (charType === "upper") {
+      await cursor.page.keyboard.press(`Shift+${char}`, keypressDelay())
+    } else {
+      await element.press(char, keypressDelay())
+    }
+
     await waitForTimeout(delays.all)
 
     // Add longer delay after sentence termination or punctuation.
@@ -82,6 +92,9 @@ export const typeInto = async (
     // Increment counter for cadence tracking.
     position++
   }
+
+  // Press tab to remove focus from element.
+  await element.press("Tab", keypressDelay())
 
   // Pause a moment after finishing input.
   await waitForTimeout(delays.complete)
